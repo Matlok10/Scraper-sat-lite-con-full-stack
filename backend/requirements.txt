@@ -5,9 +5,8 @@ django-cors-headers==4.3.1
 django-environ==0.11.2
 django-filter==25.2
 
-# Base de Datos
-# psycopg2-binary==2.9.9  # Comentado - instalar manualmente si es necesario
-# psycopg2==2.9.9
+# Database
+dj-database-url==2.1.0
 
 # Cache
 redis==5.0.1

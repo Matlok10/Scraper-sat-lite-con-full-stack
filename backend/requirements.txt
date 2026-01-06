@@ -1,0 +1,29 @@
+# Core Django
+Django==6.0
+djangorestframework==3.14.0
+django-cors-headers==4.3.1
+django-environ==0.11.2
+django-filter==25.2
+
+# Base de Datos
+# psycopg2-binary==2.9.9  # Comentado - instalar manualmente si es necesario
+# psycopg2==2.9.9
+
+# Cache
+redis==5.0.1
+django-redis==5.4.0
+
+# Task Queue
+celery==5.6.2
+
+# Web Server
+gunicorn==23.0.0
+
+# Utilidades
+python-dotenv==1.0.0
+requests==2.31.0
+python-dateutil==2.8.2
+pytz==2024.1
+
+# API Documentation
+drf-spectacular==0.27.0

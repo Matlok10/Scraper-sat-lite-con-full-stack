@@ -1,0 +1,29 @@
+{
+  "include": [
+    "."
+  ],
+  "exclude": [
+    "**/node_modules",
+    "**/__pycache__",
+    "**/venv",
+    "**/env"
+  ],
+  "defineConstant": {
+    "DEBUG": true
+  },
+  "stubPath": "",
+  "venvPath": "..",
+  "venv": "venv",
+  "pythonVersion": "3.14",
+  "pythonPlatform": "Linux",
+  "reportMissingImports": true,
+  "reportMissingTypeStubs": false,
+  "reportGeneralTypeIssues": "warning",
+  "reportOptionalMemberAccess": "warning",
+  "reportOptionalSubscript": "warning",
+  "reportPrivateImportUsage": "warning",
+  "reportUnboundVariable": "error",
+  "reportUndefinedVariable": "error",
+  "typeCheckingMode": "basic",
+  "useLibraryCodeForTypes": true
+}

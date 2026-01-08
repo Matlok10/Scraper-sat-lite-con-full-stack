@@ -101,6 +101,12 @@ class Tarea_Scrapeo(models.Model):
         verbose_name="Posts Encontrados"
     )
     
+    activa = models.BooleanField(
+        default=True,
+        verbose_name="Activa",
+        help_text="Si la tarea está habilitada para ejecutarse"
+    )
+    
     # Timestamps
     ultima_ejecucion = models.DateTimeField(
         null=True,

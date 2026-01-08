@@ -1,10 +1,10 @@
 from rest_framework import viewsets
-from .models import Catedra
-from .serializers import CatedraSerializer
+from .models import Comision
+from .serializers import ComisionSerializer
 
-class CatedraViewSet(viewsets.ModelViewSet):
+class ComisionViewSet(viewsets.ModelViewSet):
     """
-    ViewSet para visualizar y editar cátedras.
+    ViewSet para visualizar y editar comisiones.
     """
-    queryset = Catedra.objects.all()
-    serializer_class = CatedraSerializer
+    queryset = Comision.objects.all()
+    serializer_class = ComisionSerializer

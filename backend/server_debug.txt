@@ -1,4 +1,0 @@
-Watching for file changes with StatReloader
-INFO 2026-01-07 06:01:48,124 autoreload 571300 139949710580672 Watching for file changes with StatReloader
-[07/Jan/2026 06:02:08] "GET /api/catedras/ HTTP/1.1" 200 52
-[07/Jan/2026 06:02:15] "GET /api/catedras/ HTTP/1.1" 200 52

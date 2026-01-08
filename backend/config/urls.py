@@ -23,7 +23,7 @@ from django.urls import path, re_path, include
 from django.views.static import serve
 from rest_framework.routers import DefaultRouter
 
-from academic.views import CatedraViewSet
+from academic.views import ComisionViewSet
 from scraping.views import (
     GruposViewSet, TareaScrapeoViewSet, 
     SesionScrapingViewSet, PostScrapeadoViewSet
@@ -32,7 +32,7 @@ from users.views import UserLoginView, UserLogoutView
 
 # API Router configuration
 router = DefaultRouter()
-router.register(r'catedras', CatedraViewSet, basename='catedra')
+router.register(r'catedras', ComisionViewSet, basename='catedra')
 router.register(r'grupos', GruposViewSet, basename='grupo')
 router.register(r'tareas', TareaScrapeoViewSet, basename='tarea')
 router.register(r'sesiones', SesionScrapingViewSet, basename='sesion')

@@ -9,16 +9,16 @@ from .models import Recomendacion, Cache_Metadatos
 class RecomendacionAdmin(admin.ModelAdmin):
     """Admin para el modelo Recomendacion."""
     
-    list_display = ['id', 'catedra', 'sentimiento', 'confianza', 'votos_utilidad', 'contribuidor', 'fecha_creacion']
-    list_filter = ['sentimiento', 'fecha_creacion', 'catedra']
-    search_fields = ['texto', 'catedra__codigo', 'catedra__nombre', 'contribuidor__username']
+    list_display = ['id', 'comision', 'sentimiento', 'confianza', 'votos_utilidad', 'contribuidor', 'fecha_creacion']
+    list_filter = ['sentimiento', 'fecha_creacion', 'comision']
+    search_fields = ['texto', 'comision__codigo', 'comision__nombre', 'contribuidor__username']
     ordering = ['-fecha_creacion']
     
     readonly_fields = ['fecha_creacion', 'fecha_modificacion']
     
     fieldsets = (
         ('Información Principal', {
-            'fields': ('catedra', 'texto', 'sentimiento', 'confianza')
+            'fields': ('comision', 'texto', 'sentimiento', 'confianza', 'prob_aprobar', 'docent_perf', 'parciales_tipo', 'asistencia', 'toma_tp')
         }),
         ('Relaciones', {
             'fields': ('post_origen', 'contribuidor', 'sesion_scraping')

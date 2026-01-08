@@ -1,11 +1,11 @@
 from rest_framework import serializers
-from .models import Catedra
+from .models import Comision
 
-class CatedraSerializer(serializers.ModelSerializer):
+class ComisionSerializer(serializers.ModelSerializer):
     """
-    Serializer para el modelo de Cátedra.
+    Serializer para el modelo de Comisión.
     """
     class Meta:
-        model = Catedra
+        model = Comision
         fields = '__all__'
         read_only_fields = ('fecha_creacion', 'ultima_actualizacion_scraping')

@@ -1,28 +1,44 @@
-# Core Django
+amqp==5.3.1
+asgiref==3.11.0
+attrs==25.4.0
+billiard==4.2.4
+celery==5.6.2
+certifi==2026.1.4
+charset-normalizer==3.4.4
+click==8.3.1
+click-didyoumean==0.3.1
+click-plugins==1.1.1.2
+click-repl==0.3.0
+dj-database-url==2.1.0
 Django==6.0
-djangorestframework==3.14.0
 django-cors-headers==4.3.1
 django-environ==0.11.2
 django-filter==25.2
-
-# Database
-dj-database-url==2.1.0
-
-# Cache
-redis==5.0.1
 django-redis==5.4.0
-
-# Task Queue
-celery==5.6.2
-
-# Web Server
-gunicorn==23.0.0
-
-# Utilidades
-python-dotenv==1.0.0
-requests==2.31.0
-python-dateutil==2.8.2
-pytz==2024.1
-
-# API Documentation
+djangorestframework==3.14.0
 drf-spectacular==0.27.0
+gunicorn==23.0.0
+idna==3.11
+inflection==0.5.1
+jsonschema==4.25.1
+jsonschema-specifications==2025.9.1
+kombu==5.6.2
+packaging==25.0
+prompt_toolkit==3.0.52
+python-dateutil==2.8.2
+python-dotenv==1.0.0
+pytz==2024.1
+PyYAML==6.0.3
+redis==5.0.1
+referencing==0.37.0
+requests==2.31.0
+rpds-py==0.30.0
+six==1.17.0
+sqlparse==0.5.5
+typing_extensions==4.15.0
+tzdata==2025.3
+tzlocal==5.3.1
+uritemplate==4.2.0
+urllib3==2.6.2
+vine==5.1.0
+wcwidth==0.2.14

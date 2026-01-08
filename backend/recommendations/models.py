@@ -19,11 +19,12 @@ class Recomendacion(models.Model):
     Extraída y procesada desde posts de Facebook usando NLP.
     """
     # Relaciones principales
-    catedra = models.ForeignKey(
-        'academic.Catedra',
+    comision = models.ForeignKey(
+        'academic.Comision',
         on_delete=models.CASCADE,
         related_name='recomendaciones',
-        verbose_name="Cátedra"
+        verbose_name="Comisión",
+        null=True
     )
     post_origen = models.ForeignKey(
         'scraping.Post_Scrapeado',
@@ -71,6 +72,38 @@ class Recomendacion(models.Model):
         help_text="Nivel de confianza del análisis NLP (0-1)"
     )
     
+    # Nuevos campos del esquema
+    prob_aprobar = models.CharField(
+        max_length=50,
+        choices=[
+            ('alto', 'Alto'),
+            ('medio', 'Medio'),
+            ('bajo', 'Bajo'),
+            ('desconocido', 'Desconocido'),
+        ],
+        default='desconocido',
+        verbose_name="Probabilidad de Aprobar"
+    )
+    docent_perf = models.JSONField(
+        default=dict,
+        blank=True,
+        verbose_name="Perfil Docente",
+        help_text="Atributos extraídos del docente"
+    )
+    parciales_tipo = models.CharField(
+        max_length=100,
+        blank=True,
+        verbose_name="Tipo de Parciales"
+    )
+    asistencia = models.BooleanField(
+        default=False,
+        verbose_name="Asistencia Obligatoria"
+    )
+    toma_tp = models.BooleanField(
+        default=False,
+        verbose_name="Toma TP"
+    )
+    
     # Votación comunitaria
     votos_utilidad = models.IntegerField(
         default=0,
@@ -96,14 +129,14 @@ class Recomendacion(models.Model):
         verbose_name_plural = "Recomendaciones"
         ordering = ['-fecha_creacion']
         indexes = [
-            models.Index(fields=['catedra', '-fecha_creacion']),
+            models.Index(fields=['comision', '-fecha_creacion']),
             models.Index(fields=['sentimiento']),
             models.Index(fields=['-votos_utilidad']),
         ]
     
     def __str__(self) -> str:
-        catedra_codigo = self.catedra.codigo if hasattr(self.catedra, 'codigo') else str(self.catedra)
-        return f"{catedra_codigo} - {self.sentimiento} ({self.confianza:.2f})"
+        comision_codigo = self.comision.codigo if hasattr(self.comision, 'codigo') else str(self.comision)
+        return f"{comision_codigo} - {self.sentimiento} ({self.confianza:.2f})"
 
 
 class Cache_Metadatos(models.Model):

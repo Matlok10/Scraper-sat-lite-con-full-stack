@@ -1,0 +1,60 @@
+<aside class="w-64 bg-slate-900 text-white flex flex-col h-screen fixed left-0 top-0 shadow-xl z-20">
+    <div class="p-6 flex items-center gap-3">
+        <div class="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center font-bold text-xl">
+            A
+        </div>
+        <div>
+            <h1 class="font-bold text-lg leading-tight">Academia</h1>
+            <p class="text-xs text-slate-400">Scraper AI</p>
+        </div>
+    </div>
+
+    <nav class="flex-1 mt-6 px-4 space-y-1">
+        <a href="{% url 'dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %} w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6z"></path></svg>
+            <span class="font-medium">Dashboard</span>
+        </a>
+
+        <a href="{% url 'catedras' %}" class="nav-link {% if request.resolver_match.url_name == 'catedras' %}active{% endif %} w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.856-1.487M15 10h.01M11 10h.01M7 10h.01M6 20h12a2 2 0 002-2V8a2 2 0 00-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+            <span class="font-medium">Cátedras</span>
+        </a>
+
+        <a href="{% url 'scraping' %}" class="nav-link {% if request.resolver_match.url_name == 'scraping' %}active{% endif %} w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20H19a2 2 0 002-2v-5a2 2 0 00-2-2h-2.5a2 2 0 01-1-3.75A6 6 0 0021 12a6 6 0 01-21 0 6 6 0 019.759-5.75z"></path></svg>
+            <span class="font-medium">Centro de Scraping</span>
+        </a>
+
+        <a href="{% url 'recommendations' %}" class="nav-link {% if request.resolver_match.url_name == 'recommendations' %}active{% endif %} w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5a4 4 0 100-8 4 4 0 000 8z"></path></svg>
+            <span class="font-medium">Recomendaciones</span>
+        </a>
+
+        <a href="{% url 'history' %}" class="nav-link {% if request.resolver_match.url_name == 'history' %}active{% endif %} w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span class="font-medium">Historial</span>
+        </a>
+    </nav>
+
+    <div class="p-6 border-t border-slate-800">
+        <div class="flex items-center gap-3 mb-4">
+            <div class="w-8 h-8 rounded-full bg-slate-700" />
+            <div class="overflow-hidden">
+                <p class="text-sm font-medium truncate">{{ user.username }}</p>
+                <p class="text-xs text-slate-500 truncate">{{ user.email }}</p>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<style>
+    .nav-link {
+        border-radius: 0.75rem;
+        transition: all 0.3s;
+    }
+    .nav-link.active {
+        background-color: #4f46e5;
+        color: white;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+</style>

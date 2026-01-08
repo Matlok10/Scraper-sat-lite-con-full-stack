@@ -1,0 +1,76 @@
+[
+  {
+    "model": "academic.docente",
+    "pk": 1,
+    "fields": {
+      "nombre": "Ada",
+      "apellido": "Lovelace",
+      "nombre_completo": "Ada Lovelace",
+      "alias_search": "ada lovelace"
+    }
+  },
+  {
+    "model": "academic.comision",
+    "pk": 1,
+    "fields": {
+      "codigo": "MAT101",
+      "nombre": "Matemática I",
+      "docente": 1,
+      "numero_catedra": 1,
+      "horario": "Lunes y Miércoles 10-12",
+      "cuatrimestre": "1C",
+      "mencion_fb": 5,
+      "ano": 1,
+      "activa": true,
+      "ultima_actualizacion_scraping": "2025-01-01T00:00:00Z",
+      "fecha_creacion": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "scraping.grupos",
+    "pk": 1,
+    "fields": {
+      "nombre": "Grupo Uni",
+      "url": "https://example.com/group/uni",
+      "activo": true,
+      "prioridad": 1,
+      "fecha_creacion": "2025-01-01T00:00:00Z",
+      "ultima_actualizacion": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "scraping.post_scrapeado",
+    "pk": 1,
+    "fields": {
+      "post_id": "fb-123",
+      "grupo": 1,
+      "sesion_scraping": null,
+      "texto": "Busco recomendaciones para Matemática I",
+      "autor": "Juan",
+      "procesado": false,
+      "fecha_post": null,
+      "fecha_scraping": "2025-01-02T00:00:00Z"
+    }
+  },
+  {
+    "model": "recommendations.recomendacion",
+    "pk": 1,
+    "fields": {
+      "comision": 1,
+      "post_origen": 1,
+      "contribuidor": null,
+      "sesion_scraping": null,
+      "texto": "Excelente cátedra, explica muy claro.",
+      "sentimiento": "positivo",
+      "confianza": 0.87,
+      "prob_aprobar": "alto",
+      "docent_perf": {},
+      "parciales_tipo": "Escrito",
+      "asistencia": false,
+      "toma_tp": false,
+      "votos_utilidad": 3,
+      "fecha_creacion": "2025-01-03T00:00:00Z",
+      "fecha_modificacion": "2025-01-03T00:00:00Z"
+    }
+  }
+]

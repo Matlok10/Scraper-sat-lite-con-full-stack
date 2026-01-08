@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Recomendaciones - Academia Scraper AI{% endblock %}
+
+{% block page_title %}Base de Recomendaciones{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div>
+        <h2 class="text-2xl font-bold text-slate-800">Base de Recomendaciones</h2>
+        <p class="text-slate-500">Perspectivas curadas por IA a partir de interacciones de estudiantes</p>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4">
+        {% for rec in recommendations %}
+        <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col md:flex-row gap-6">
+            <div class="md:w-1/4">
+                <div class="mb-2">
+                    <span class="px-3 py-1 rounded-full text-[10px] font-bold border {% if rec.sentimiento == 'positivo' %}bg-emerald-50 text-emerald-700 border-emerald-100{% elif rec.sentimiento == 'negativo' %}bg-rose-50 text-rose-700 border-rose-100{% else %}bg-slate-50 text-slate-700 border-slate-100{% endif %}">
+                        {{ rec.get_sentimiento_display }}
+                    </span>
+                </div>
+                <h4 class="font-bold text-slate-800 text-sm leading-tight mb-2">{{ rec.comision.nombre|default:"Sin comisión" }}</h4>
+                <div class="flex items-center gap-2 text-slate-400 text-xs">
+                    <span>Confianza:</span>
+                    <div class="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                        <div
+                            class="h-full bg-indigo-500 transition-all"
+                            style="width: {{ rec.conf_pct|floatformat:0 }}%"
+                        />
+                    </div>
+                    <span class="font-bold">{{ rec.conf_pct|floatformat:0 }}%</span>
+                </div>
+            </div>
+
+            <div class="flex-1 border-l border-slate-50 md:pl-6">
+                <div class="flex items-start gap-4">
+                    <div class="p-3 bg-indigo-50 text-indigo-600 rounded-xl">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path></svg>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-slate-700 italic text-sm mb-4">"{{ rec.texto }}"</p>
+                        <div class="flex items-center justify-between">
+                            <p class="text-[10px] text-slate-400">Origen: Post #{{ rec.post_origen.id }}</p>
+                            <div class="flex items-center gap-4">
+                                <button 
+                                    onclick="alert('¡Gracias! Tu feedback ayuda a mejorar el modelo.')"
+                                    class="flex items-center gap-2 text-slate-400 hover:text-indigo-600 transition-colors text-xs font-bold"
+                                >
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.646 7.23a2 2 0 01-1.789 1.106H9m0 0H7.5a2 2 0 01-2-2v-12a2 2 0 012-2h2.5"></path></svg>
+                                    Es útil ({{ rec.votos_utilidad }})
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="md:w-12 flex items-center justify-center">
+                {% if rec.sentimiento == 'positivo' %}
+                    <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                {% elif rec.sentimiento == 'negativo' %}
+                    <svg class="w-5 h-5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17l-5-5m0 0l5-5m-5 5H6"></path></svg>
+                {% else %}
+                    <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 12H6"></path></svg>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <div class="py-20 flex flex-col items-center text-slate-400 bg-white rounded-2xl border border-dashed border-slate-200">
+            <svg class="w-12 h-12 mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path></svg>
+            <p class="text-lg">No hay recomendaciones generadas aún</p>
+            <p class="text-sm">Inicia una auditoría de IA en el Centro de Scraping</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

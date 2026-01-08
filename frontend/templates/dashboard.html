@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Academia Scraper AI{% endblock %}
+
+{% block page_title %}Panel de Control{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="flex items-center justify-between">
+        <h2 class="text-2xl font-bold text-slate-800">Panel de Control</h2>
+        <p class="text-slate-500 text-sm">Última actualización: {{ today|date:"d/m/Y" }}</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <div class="flex items-center justify-between mb-4">
+                <div class="p-3 bg-slate-50 rounded-xl">
+                    <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <span class="text-xs font-medium text-slate-400">+5% este mes</span>
+            </div>
+            <h3 class="text-slate-500 text-sm font-medium">Cátedras</h3>
+            <p class="text-2xl font-bold text-slate-800">{{ stats.total_catedras }}</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <div class="flex items-center justify-between mb-4">
+                <div class="p-3 bg-slate-50 rounded-xl">
+                    <svg class="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                </div>
+                <span class="text-xs font-medium text-slate-400">+12% este mes</span>
+            </div>
+            <h3 class="text-slate-500 text-sm font-medium">Posts Scrapeados</h3>
+            <p class="text-2xl font-bold text-slate-800">{{ stats.total_posts }}</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <div class="flex items-center justify-between mb-4">
+                <div class="p-3 bg-slate-50 rounded-xl">
+                    <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <span class="text-xs font-medium text-slate-400">+8% este mes</span>
+            </div>
+            <h3 class="text-slate-500 text-sm font-medium">Recomendaciones</h3>
+            <p class="text-2xl font-bold text-slate-800">{{ stats.total_recommendations }}</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <div class="flex items-center justify-between mb-4">
+                <div class="p-3 bg-slate-50 rounded-xl">
+                    <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                </div>
+                <span class="text-xs font-medium text-slate-400">2 en curso</span>
+            </div>
+            <h3 class="text-slate-500 text-sm font-medium">Sesiones Activas</h3>
+            <p class="text-2xl font-bold text-slate-800">{{ stats.active_sessions }}</p>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <h3 class="text-lg font-bold text-slate-800 mb-6">Recomendaciones por Cátedra</h3>
+            <div class="h-64 flex items-end justify-around gap-4">
+                {% for catedra in top_catedras %}
+                <div class="flex-1 flex flex-col items-center gap-2">
+                    <div class="w-full" style="background-color: #6366f1; height: {{ catedra.bar_height }}px; border-radius: 4px 4px 0 0; min-height: 20px;"></div>
+                    <span class="text-xs text-slate-600 text-center truncate max-w-full">{{ catedra.nombre|truncatewords:2 }}</span>
+                    <span class="text-xs font-bold text-slate-800">{{ catedra.recommendation_count }}</span>
+                </div>
+                {% empty %}
+                <p class="text-slate-400 text-center w-full">No hay datos disponibles</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <h3 class="text-lg font-bold text-slate-800 mb-6">Actividad de Scraping Reciente</h3>
+            <div class="space-y-4">
+                {% for sesion in recent_sessions %}
+                <div class="p-4 bg-slate-50 rounded-lg flex items-center justify-between border border-slate-100">
+                    <div>
+                        <p class="text-sm font-medium text-slate-800">{{ sesion.inicio|date:"d/m/Y H:i" }}</p>
+                        <p class="text-xs text-slate-500">{{ sesion.posts_encontrados }} posts encontrados</p>
+                    </div>
+                    <span class="px-3 py-1 rounded-full text-[10px] font-bold {% if sesion.estado == 'completado' %}bg-emerald-100 text-emerald-700{% else %}bg-orange-100 text-orange-700{% endif %}">
+                        {{ sesion.get_estado_display }}
+                    </span>
+                </div>
+                {% empty %}
+                <p class="text-slate-400 text-center py-4">Sin sesiones recientes</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+</style>
+{% endblock %}

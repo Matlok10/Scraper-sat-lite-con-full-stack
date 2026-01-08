@@ -7,7 +7,7 @@ from django.conf import settings
 from django.db import models
 
 if TYPE_CHECKING:
-    from academic.models import Catedra
+    from academic.models import Comision
     from scraping.models import Post_Scrapeado, Sesion_Scraping
     from users.models import User
 

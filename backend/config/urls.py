@@ -14,24 +14,23 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from pathlib import Path
-
 from django.conf import settings
 from django.contrib import admin
-from django.http import HttpResponse, HttpResponseNotFound
 from django.urls import path, re_path, include
 from django.views.static import serve
 from rest_framework.routers import DefaultRouter
 
-from academic.views import ComisionViewSet
+from academic.views import DocenteViewSet, ComisionViewSet
 from scraping.views import (
     GruposViewSet, TareaScrapeoViewSet, 
     SesionScrapingViewSet, PostScrapeadoViewSet
 )
-from users.views import UserLoginView, UserLogoutView, UserViewSet
+from users.views import UserViewSet
+from config.views import DashboardView, CatedrasView, RecommendationsView, ScrapingView, HistoryView
 
 # API Router configuration
 router = DefaultRouter()
+router.register(r'docentes', DocenteViewSet, basename='docente')
 router.register(r'catedras', ComisionViewSet, basename='catedra')
 router.register(r'grupos', GruposViewSet, basename='grupo')
 router.register(r'tareas', TareaScrapeoViewSet, basename='tarea')
@@ -40,20 +39,23 @@ router.register(r'posts', PostScrapeadoViewSet, basename='post')
 router.register(r'users', UserViewSet, basename='user')
 
 
-def spa_view(request):
-    """Serve the compiled frontend index.html."""
-    index_path = Path(settings.BASE_DIR) / 'static' / 'frontend' / 'index.html'
-    if not index_path.exists():
-        return HttpResponseNotFound("Frontend build not found. Run 'npm run build' in frontend.")
-    content = index_path.read_text(encoding='utf-8')
-    return HttpResponse(content)
+def spa_view(_request):
+    """Fallback view - redirect to dashboard"""
+    from django.shortcuts import redirect
+    return redirect('dashboard')
 
 
+# URL patterns
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
-    path('api/auth/login/', UserLoginView.as_view(), name='login'),
-    path('api/auth/logout/', UserLogoutView.as_view(), name='logout'),
+
+    # Template routes
+    path('', DashboardView.as_view(), name='dashboard'),
+    path('catedras/', CatedrasView.as_view(), name='catedras'),
+    path('recomendaciones/', RecommendationsView.as_view(), name='recommendations'),
+    path('scraping/', ScrapingView.as_view(), name='scraping'),
+    path('historial/', HistoryView.as_view(), name='history'),
 ]
 
 # Serve static files in development (MUST be before catch-all)
@@ -62,12 +64,9 @@ if settings.DEBUG:
         re_path(r'^static/(?P<path>.*)$', serve, {
             'document_root': settings.BASE_DIR / 'static'
         }),
-        re_path(r'^assets/(?P<path>.*)$', serve, {
-            'document_root': settings.BASE_DIR / 'static' / 'frontend' / 'assets'
-        }),
     ]
 
-# SPA catch-all (MUST be last)
+# SPA catch-all (MUST be last) - for API and undefined routes
 urlpatterns += [
     re_path(r'^.*$', spa_view, name='spa'),
 ]

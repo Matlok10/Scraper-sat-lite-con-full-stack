@@ -1,6 +1,18 @@
-node_modules
+# Django static files (generated)
+*.pyc
+__pycache__/
+
+# OS files
 .DS_Store
-dist
-.env.local
-.idea
-.vscode
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# React legacy (if regenerated)
+node_modules/
+dist/
+*.local

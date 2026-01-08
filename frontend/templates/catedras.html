@@ -1,0 +1,703 @@
+{% extends 'base.html' %}
+
+{% block title %}Cátedras - Academia Scraper AI{% endblock %}
+
+{% block page_title %}Directorio de Cátedras{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h2 class="text-2xl font-bold text-slate-800">Directorio de Cátedras</h2>
+            <p class="text-slate-500">Gestión de unidades académicas y su reputación social</p>
+        </div>
+        <button
+            class="bg-indigo-600 text-white px-4 py-2 rounded-xl flex items-center gap-2 hover:bg-indigo-700 transition-colors shadow-sm"
+            onclick="openCreateModal()"
+        >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            Nueva Cátedra
+        </button>
+    </div>
+
+    <!-- Search & Filters -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="relative">
+            <svg class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Buscar por nombre, código o titular..."
+                class="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm"
+            />
+        </div>
+        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-3">
+            <div class="flex items-center gap-2 mb-2">
+                <svg class="text-slate-400 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                <p class="text-sm font-semibold text-slate-600">Filtrar por combinación de días</p>
+            </div>
+            <div id="dayFilters" class="flex flex-wrap gap-2">
+                <button type="button" data-days="lun,jue" class="day-chip">Lun y Jue</button>
+                <button type="button" data-days="mar,vie" class="day-chip">Mar y Vie</button>
+                <button type="button" data-days="lun,mie,vie" class="day-chip">Lun, Mie y Vie</button>
+                <button type="button" data-days="mar,mie,vie" class="day-chip">Mar, Mie y Vie</button>
+                <button type="button" data-days="sab" class="day-chip">Sábados</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cátedras Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" id="catedrasGrid">
+        {% for catedra in catedras %}
+        <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow group catedra-card" data-name="{{ catedra.nombre|lower }}" data-code="{{ catedra.codigo|lower }}" data-titular="{{ catedra.docente.nombre_completo|default:''|lower }}" data-horario="{{ catedra.horario|default:''|lower }}" data-modalidad="{{ catedra.modalidad|default:''|lower }}" data-sede="{{ catedra.sede|default:''|lower }}" data-ciclo="{{ catedra.ciclo|default:''|lower }}">
+            <div class="flex justify-between items-start mb-4">
+                <div class="flex items-center gap-2">
+                    <div class="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-xs font-bold">
+                        {{ catedra.codigo }}
+                    </div>
+                    {% if catedra.es_centro_externo %}
+                        <span class="px-2 py-1 rounded-full bg-amber-50 text-amber-700 text-[10px] font-semibold uppercase tracking-wide">Centro externo</span>
+                    {% endif %}
+                </div>
+                <button 
+                    class="text-slate-400 hover:text-slate-600"
+                    onclick="alert('Opciones de cátedra no disponibles.')"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2m0 7a1 1 0 110-2 1 1 0 010 2m0 7a1 1 0 110-2 1 1 0 010 2"></path></svg>
+                </button>
+            </div>
+            <h3 class="text-lg font-bold text-slate-800 mb-1 group-hover:text-indigo-600 transition-colors">{{ catedra.nombre }}</h3>
+            <p class="text-slate-500 text-sm">Titular: <span class="font-semibold">{{ catedra.docente.nombre_completo }}</span></p>
+            <p class="text-slate-500 text-sm">Horario: <span class="font-semibold">{{ catedra.horario|default:'—' }}</span></p>
+            <p class="text-slate-500 text-sm">Modalidad: <span class="font-semibold">{{ catedra.modalidad|default:'No especificada' }}</span></p>
+            <p class="text-slate-500 text-xs mb-4">Sede / Orientación: <span class="font-semibold">{{ catedra.sede|default:'No especificada' }}</span></p>
+
+            <div class="pt-4 border-t border-slate-50 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <div class="flex text-amber-400">
+                        {% for i in "12345" %}
+                            {% if i|add:"0"|add:1 <= 4 %}
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+                            {% else %}
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <span class="text-xs text-slate-400">(4.2)</span>
+                </div>
+                <div class="text-right">
+                    <p class="text-xs text-slate-400 uppercase font-bold tracking-wider">Recomendaciones</p>
+                    <p class="text-lg font-black text-slate-800">{{ catedra.recommendation_count|default:"0" }}</p>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-span-full py-20 flex flex-col items-center text-slate-400 bg-white rounded-2xl border border-dashed border-slate-200">
+            <svg class="w-12 h-12 mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <p class="text-lg">No hay cátedras disponibles</p>
+        </div>
+        {% endfor %}
+    </div>
+        <div id="emptyState" class="hidden col-span-full py-20 flex flex-col items-center text-slate-400 bg-white rounded-2xl border border-dashed border-slate-200">
+            <svg class="w-12 h-12 mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <p class="text-lg">No se encontraron cátedras con estos filtros</p>
+        </div>
+
+    <!-- Modal Crear/Importar Cátedra -->
+    <div id="createModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+        <div class="absolute inset-0" onclick="closeCreateModal()"></div>
+        <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-5xl p-6 border border-slate-100 space-y-4">
+            <div class="flex items-start justify-between">
+                <div>
+                    <p class="text-xs font-semibold uppercase text-slate-400">Nueva cátedra</p>
+                    <h3 class="text-xl font-bold text-slate-900">Crear manualmente o importar desde archivo</h3>
+                    <p class="text-slate-500 text-sm">Archivos soportados: CSV, XLS, XLSX</p>
+                </div>
+                <button class="text-slate-400 hover:text-slate-600" onclick="closeCreateModal()">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <form id="manualForm" class="space-y-4">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700">Código *</label>
+                            <input id="codigoInput" type="text" class="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="0620" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700">Cuatrimestre</label>
+                            <input id="cuatrimestreInput" type="text" class="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="1C2026">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700">Nombre *</label>
+                        <input id="nombreInput" type="text" class="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="Derecho Romano" required>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700">Apellido docente *</label>
+                            <input id="docenteApellidoInput" type="text" class="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="Lococo" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700">Nombre docente *</label>
+                            <input id="docenteNombreInput" type="text" class="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="Julio" required>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700">Selecciona combinación de días *</label>
+                        <select id="horarioDiasComboInput" class="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" required onchange="updateHorarioFields()">
+                            <option value="">-- Selecciona --</option>
+                            <option value="lun,jue">Lunes y Jueves</option>
+                            <option value="mar,vie">Martes y Viernes</option>
+                            <option value="lun,mie,vie">Lunes, Miércoles y Viernes</option>
+                            <option value="mar,mie,vie">Martes, Miércoles y Viernes</option>
+                            <option value="sab">Solo Sábado</option>
+                            <option value="lun,jue,sab">Lunes y Jueves + Sábado</option>
+                            <option value="mar,vie,sab">Martes y Viernes + Sábado</option>
+                            <option value="lun,mie,vie,sab">Lunes, Miércoles, Viernes + Sábado</option>
+                            <option value="mar,mie,vie,sab">Martes, Miércoles, Viernes + Sábado</option>
+                        </select>
+                    </div>
+
+                    <div id="horariosInputsContainer" class="grid gap-3">
+                        <!-- Se generan dinámicamente -->
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700">Modalidad</label>
+                            <select id="modalidadInput" class="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                <option value="">Seleccione</option>
+                                <option value="Presencial">Presencial</option>
+                                <option value="Remota">Remota</option>
+                                <option value="Híbrida">Híbrida</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700">Sede</label>
+                            <input id="sedeInput" type="text" class="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="General / Centro externo" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700">Orientación</label>
+                            <input id="orientacionInput" type="text" class="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="Penal, Civil, Notarial, etc." />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700">Ciclo (CPO/CPC)</label>
+                        <select id="cicloInput" class="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                            <option value="">Sin especificar</option>
+                            <option value="CPO">CPO - Ciclo Profesional Orientado</option>
+                            <option value="CPC">CPC - Ciclo Profesional Común</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700">Número de cátedra</label>
+                            <input id="numeroCatedraInput" type="number" class="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="1">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700">Año</label>
+                            <input id="anoInput" type="number" class="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="1">
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <input id="centroExternoInput" type="checkbox" class="w-4 h-4 text-indigo-600 border-slate-300 rounded" />
+                        <label for="centroExternoInput" class="text-sm text-slate-700">Marcar como centro externo</label>
+                    </div>
+
+                    <div>
+                        <p id="manualFeedback" class="text-sm text-slate-500 mb-3"></p>
+                        <div class="flex items-center gap-2">
+                            <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-xl hover:bg-indigo-700 transition-colors flex-1">Guardar manualmente</button>
+                            <button type="button" onclick="submitAndCreateNew()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl hover:bg-emerald-700 transition-colors flex-1">Guardar y crear</button>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="bg-slate-50 border border-slate-100 rounded-xl p-4 space-y-3">
+                    <div>
+                        <p class="text-sm font-semibold text-slate-800">Importar desde archivo</p>
+                        <p class="text-xs text-slate-500">Selecciona un CSV, XLS o XLSX con las columnas esperadas por el importador.</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700">Archivo</label>
+                            <input id="importFile" type="file" accept=".csv,.xls,.xlsx" class="w-full text-sm text-slate-700 mt-1">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700">Ciclo (CPO/CPC)</label>
+                            <select id="importCicloInput" class="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                <option value="">Sin especificar</option>
+                                <option value="CPO">CPO - Ciclo Profesional Orientado</option>
+                                <option value="CPC">CPC - Ciclo Profesional Común</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input id="updateExistingInput" type="checkbox" class="w-4 h-4 text-indigo-600 border-slate-300 rounded">
+                        <label class="text-sm text-slate-700">Actualizar comisiones existentes</label>
+                    </div>
+                    <div class="flex items-center justify-between gap-3">
+                        <p id="importFeedback" class="text-sm text-slate-500"></p>
+                        <button type="button" onclick="handleImportSubmit()" class="bg-slate-900 text-white px-4 py-2 rounded-xl hover:bg-slate-800 transition-colors">Importar archivo</button>
+                    </div>
+                    <pre id="importLog" class="text-xs bg-white border border-slate-200 rounded-lg p-3 h-48 overflow-y-auto custom-scroll hidden"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.day-chip {
+    padding: 0.35rem 0.75rem;
+    border-radius: 9999px;
+    border: 1px solid #e2e8f0;
+    font-size: 0.875rem;
+    color: #475569;
+    transition: all 0.15s ease;
+    background: white;
+}
+.day-chip:hover {
+    border-color: #818cf8;
+    color: #4f46e5;
+}
+.day-chip.active {
+    background: #eef2ff;
+    color: #4338ca;
+    border-color: #818cf8;
+}
+</style>
+
+<script>
+const searchInput = document.getElementById('searchInput');
+const modal = document.getElementById('createModal');
+const manualFeedback = document.getElementById('manualFeedback');
+const importFeedback = document.getElementById('importFeedback');
+const importLog = document.getElementById('importLog');
+const dayChips = Array.from(document.querySelectorAll('.day-chip'));
+let selectedDayCombos = [];
+
+function getCSRFToken() {
+    const match = document.cookie.split(';').map(c => c.trim()).find(c => c.startsWith('csrftoken='));
+    return match ? match.split('=')[1] : '';
+}
+
+function openCreateModal() {
+    modal.classList.remove('hidden');
+}
+
+function closeCreateModal() {
+    modal.classList.add('hidden');
+}
+
+window.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !modal.classList.contains('hidden')) {
+        closeCreateModal();
+    }
+});
+
+function normalizeDayToken(token) {
+    const t = token.toLowerCase();
+    if (t.startsWith('lun')) return 'lun';
+    if (t.startsWith('mar')) return 'mar';
+    if (t.startsWith('mie') || t.startsWith('mié')) return 'mie';
+    if (t.startsWith('jue')) return 'jue';
+    if (t.startsWith('vie')) return 'vie';
+    if (t.startsWith('sab') || t.startsWith('sáb')) return 'sab';
+    return '';
+}
+
+function deriveDaysFromHorario(text) {
+    if (!text) return [];
+    const tokens = text.replace(/[,/.-]/g, ' ').split(/\s+/);
+    const days = new Set();
+    tokens.forEach(tok => {
+        const d = normalizeDayToken(tok);
+        if (d) days.add(d);
+    });
+    return Array.from(days);
+}
+
+function initCardDays() {
+    const cards = document.querySelectorAll('.catedra-card');
+    cards.forEach(card => {
+        const horario = card.dataset.horario;
+        const days = deriveDaysFromHorario(horario);
+        card.dataset.days = days.join(',');
+    });
+}
+
+function matchesDayCombos(cardDaysArr) {
+    if (!selectedDayCombos.length) return true;
+    const cardSet = new Set(cardDaysArr);
+    // La tarjeta coincide si cumple al menos uno de los combos completos
+    return selectedDayCombos.some(combo => combo.every(day => cardSet.has(day)));
+}
+
+function filterCards() {
+    const searchTerm = searchInput.value.toLowerCase();
+    const cards = document.querySelectorAll('.catedra-card');
+    const emptyState = document.getElementById('emptyState');
+    let visibleCount = 0;
+
+    cards.forEach(card => {
+        const name = card.dataset.name;
+        const code = card.dataset.code;
+        const titular = card.dataset.titular;
+        const horario = card.dataset.horario;
+        const cardDays = (card.dataset.days || '').split(',').filter(Boolean);
+
+        const matchesSearch = name.includes(searchTerm) || code.includes(searchTerm) || titular.includes(searchTerm);
+        const matchesDays = matchesDayCombos(cardDays);
+
+        const show = matchesSearch && matchesDays;
+        card.style.display = show ? '' : 'none';
+        if (show) visibleCount += 1;
+    });
+
+    if (emptyState) {
+        emptyState.classList.toggle('hidden', visibleCount > 0);
+    }
+}
+
+searchInput.addEventListener('keyup', filterCards);
+
+dayChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+        const combo = (chip.dataset.days || '').split(',').filter(Boolean);
+        const comboKey = combo.join('-');
+        const existingIdx = selectedDayCombos.findIndex(c => c.join('-') === comboKey);
+        if (existingIdx >= 0) {
+            selectedDayCombos.splice(existingIdx, 1);
+            chip.classList.remove('active');
+        } else {
+            selectedDayCombos.push(combo);
+            chip.classList.add('active');
+        }
+        filterCards();
+    });
+});
+
+function updateHorarioFields() {
+    const combo = document.getElementById('horarioDiasComboInput').value;
+    if (!combo) {
+        document.getElementById('horariosInputsContainer').innerHTML = '';
+        return;
+    }
+
+    const dias = combo.split(',');
+    const diasLabels = {
+        'lun': 'Lunes',
+        'mar': 'Martes',
+        'mie': 'Miércoles',
+        'jue': 'Jueves',
+        'vie': 'Viernes',
+        'sab': 'Sábado'
+    };
+
+    const container = document.getElementById('horariosInputsContainer');
+    container.innerHTML = '';
+
+    // Horario común (por defecto)
+    const commonDiv = document.createElement('div');
+    commonDiv.className = 'grid gap-2';
+
+    const labelCommon = document.createElement('label');
+    labelCommon.className = 'block text-sm font-semibold text-slate-600';
+    labelCommon.textContent = 'Horario (igual para todos los días)';
+
+    const inputInicio = document.createElement('input');
+    inputInicio.type = 'time';
+    inputInicio.id = 'horario-comun-inicio';
+    inputInicio.className = 'w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent';
+
+    const inputFin = document.createElement('input');
+    inputFin.type = 'time';
+    inputFin.id = 'horario-comun-fin';
+    inputFin.className = 'w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent';
+
+    const timeRow = document.createElement('div');
+    timeRow.className = 'grid grid-cols-2 gap-2';
+    
+    const labelInicio = document.createElement('label');
+    labelInicio.className = 'block text-xs font-semibold text-slate-600';
+    labelInicio.textContent = 'Inicio';
+    
+    const labelFin = document.createElement('label');
+    labelFin.className = 'block text-xs font-semibold text-slate-600';
+    labelFin.textContent = 'Fin';
+    
+    timeRow.appendChild(labelInicio);
+    timeRow.appendChild(labelFin);
+    timeRow.appendChild(inputInicio);
+    timeRow.appendChild(inputFin);
+
+    commonDiv.appendChild(labelCommon);
+    commonDiv.appendChild(timeRow);
+
+    // Checkbox para editar por separado
+    const checkboxDiv = document.createElement('div');
+    checkboxDiv.className = 'flex items-center gap-2 mt-2';
+    
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.id = 'editarPorDiaCheckbox';
+    checkbox.className = 'w-4 h-4 text-indigo-600 border-slate-300 rounded';
+    checkbox.addEventListener('change', updateHorarioFields);
+    
+    const checkboxLabel = document.createElement('label');
+    checkboxLabel.htmlFor = 'editarPorDiaCheckbox';
+    checkboxLabel.className = 'text-sm text-slate-700';
+    checkboxLabel.textContent = 'Editar horarios diferentes por día';
+    
+    checkboxDiv.appendChild(checkbox);
+    checkboxDiv.appendChild(checkboxLabel);
+
+    container.appendChild(commonDiv);
+    container.appendChild(checkboxDiv);
+
+    // Si el checkbox está marcado, mostrar inputs por día
+    if (checkbox.checked) {
+        const separateDiv = document.createElement('div');
+        separateDiv.id = 'separateDaysContainer';
+        separateDiv.className = 'grid gap-3 mt-4';
+
+        dias.forEach(dia => {
+            const label = diasLabels[dia] || dia;
+            const dayDiv = document.createElement('div');
+            dayDiv.className = 'grid gap-2';
+
+            const dayLabel = document.createElement('label');
+            dayLabel.className = 'block text-xs font-semibold text-slate-600';
+            dayLabel.textContent = label;
+
+            const input = document.createElement('input');
+            input.type = 'time';
+            input.id = `horario-${dia}-inicio`;
+            input.className = 'w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent';
+
+            const inputEnd = document.createElement('input');
+            inputEnd.type = 'time';
+            inputEnd.id = `horario-${dia}-fin`;
+            inputEnd.className = 'w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent';
+
+            const timeRowSeparate = document.createElement('div');
+            timeRowSeparate.className = 'grid grid-cols-2 gap-2';
+            
+            const labelInicio2 = document.createElement('label');
+            labelInicio2.className = 'block text-xs font-semibold text-slate-600';
+            labelInicio2.textContent = 'Inicio';
+            
+            const labelFin2 = document.createElement('label');
+            labelFin2.className = 'block text-xs font-semibold text-slate-600';
+            labelFin2.textContent = 'Fin';
+            
+            timeRowSeparate.appendChild(labelInicio2);
+            timeRowSeparate.appendChild(labelFin2);
+            timeRowSeparate.appendChild(input);
+            timeRowSeparate.appendChild(inputEnd);
+
+            dayDiv.appendChild(dayLabel);
+            dayDiv.appendChild(timeRowSeparate);
+            separateDiv.appendChild(dayDiv);
+        });
+
+        container.appendChild(separateDiv);
+    }
+}
+
+function buildHorarioString() {
+    const combo = document.getElementById('horarioDiasComboInput').value;
+    if (!combo) return '';
+
+    const dias = combo.split(',');
+    const diasLabels = {
+        'lun': 'Lun',
+        'mar': 'Mar',
+        'mie': 'Mie',
+        'jue': 'Jue',
+        'vie': 'Vie',
+        'sab': 'Sab'
+    };
+
+    const editarPorDia = document.getElementById('editarPorDiaCheckbox')?.checked || false;
+    const horarioParts = [];
+
+    if (editarPorDia) {
+        // Usar horarios separados por día
+        dias.forEach(dia => {
+            const inicio = document.getElementById(`horario-${dia}-inicio`)?.value || '';
+            const fin = document.getElementById(`horario-${dia}-fin`)?.value || '';
+            if (inicio && fin) {
+                horarioParts.push(`${diasLabels[dia]} ${inicio.substr(0, 5)} a ${fin.substr(0, 5)}`);
+            }
+        });
+    } else {
+        // Usar horario común para todos los días
+        const inicio = document.getElementById('horario-comun-inicio')?.value || '';
+        const fin = document.getElementById('horario-comun-fin')?.value || '';
+        if (inicio && fin) {
+            dias.forEach(dia => {
+                horarioParts.push(`${diasLabels[dia]} ${inicio.substr(0, 5)} a ${fin.substr(0, 5)}`);
+            });
+        }
+    }
+
+    return horarioParts.join(' - ');
+}
+
+async function submitManualForm(createNew = false) {
+    manualFeedback.textContent = 'Guardando...';
+
+    const horario = buildHorarioString();
+    if (!horario) {
+        manualFeedback.textContent = 'Por favor especifica los horarios.';
+        manualFeedback.className = 'text-sm text-red-600';
+        return;
+    }
+
+    const sede = (document.getElementById('sedeInput').value || '').trim();
+    const orientacion = (document.getElementById('orientacionInput').value || '').trim();
+    const sedeCompleta = [sede, orientacion].filter(Boolean).join(' / ');
+
+    const payload = {
+        codigo: document.getElementById('codigoInput').value,
+        cuatrimestre: document.getElementById('cuatrimestreInput').value,
+        nombre: document.getElementById('nombreInput').value,
+        docente_nombre: document.getElementById('docenteNombreInput').value,
+        docente_apellido: document.getElementById('docenteApellidoInput').value,
+        horario: horario,
+        modalidad: document.getElementById('modalidadInput').value,
+        sede: sedeCompleta,
+        numero_catedra: document.getElementById('numeroCatedraInput').value,
+        ano: document.getElementById('anoInput').value,
+        es_centro_externo: document.getElementById('centroExternoInput').checked,
+        ciclo: document.getElementById('cicloInput').value,
+    };
+
+    try {
+        const response = await fetch('/api/catedras/crear-manual/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken(),
+            },
+            body: JSON.stringify(payload),
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+            manualFeedback.textContent = data.detail || 'No se pudo guardar.';
+            manualFeedback.className = 'text-sm text-red-600';
+            return;
+        }
+
+        manualFeedback.textContent = 'Guardado correctamente.';
+        manualFeedback.className = 'text-sm text-emerald-600';
+
+        if (createNew) {
+            // Limpiar formulario
+            document.getElementById('manualForm').reset();
+            document.getElementById('horariosInputsContainer').innerHTML = '';
+            document.getElementById('horarioDiasComboInput').value = '';
+        } else {
+            setTimeout(() => window.location.reload(), 800);
+        }
+    } catch (error) {
+        manualFeedback.textContent = 'Error al guardar la cátedra.';
+        manualFeedback.className = 'text-sm text-red-600';
+    }
+}
+
+function submitAndCreateNew() {
+    submitManualForm(true);
+}
+
+const manualForm = document.getElementById('manualForm');
+if (manualForm) {
+    manualForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        submitManualForm(false);
+    });
+}
+
+async function handleImportSubmit() {
+    importFeedback.textContent = '';
+    importLog.classList.add('hidden');
+    const fileInput = document.getElementById('importFile');
+    const updateExistingInput = document.getElementById('updateExistingInput');
+    const cicloInput = document.getElementById('importCicloInput');
+
+    if (!fileInput.files.length) {
+        importFeedback.textContent = 'Selecciona un archivo primero.';
+        importFeedback.className = 'text-sm text-red-600';
+        return;
+    }
+
+    importFeedback.textContent = 'Procesando importación...';
+    importFeedback.className = 'text-sm text-slate-600';
+
+    const formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+    formData.append('update_existing', updateExistingInput.checked ? 'true' : 'false');
+    formData.append('ciclo', cicloInput.value);
+
+    try {
+        const response = await fetch('/api/catedras/importar/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCSRFToken(),
+            },
+            body: formData,
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            importFeedback.textContent = data.detail || 'No se pudo importar.';
+            importFeedback.className = 'text-sm text-red-600';
+            return;
+        }
+
+        const stats = data.stats || {};
+        importFeedback.textContent = `Importación finalizada. Creadas: ${stats.comisiones_creadas || 0}, Actualizadas: ${stats.comisiones_actualizadas || 0}, Omitidas: ${stats.comisiones_omitidas || 0}`;
+        importFeedback.className = 'text-sm text-emerald-600';
+
+        const lines = [
+            'Resumen de importación:',
+            `Docentes creados: ${stats.docentes_creados || 0}`,
+            `Docentes existentes: ${stats.docentes_existentes || 0}`,
+            `Comisiones creadas: ${stats.comisiones_creadas || 0}`,
+            `Comisiones actualizadas: ${stats.comisiones_actualizadas || 0}`,
+            `Comisiones omitidas: ${stats.comisiones_omitidas || 0}`,
+        ];
+
+        if (data.duplicates && data.duplicates.warnings && data.duplicates.warnings.length) {
+            lines.push('\nAdvertencias de duplicados:', ...data.duplicates.warnings);
+        }
+
+        if (data.log && data.log.length) {
+            lines.push('\nLog:', ...data.log);
+        }
+
+        importLog.textContent = lines.join('\n');
+        importLog.classList.remove('hidden');
+        setTimeout(() => window.location.reload(), 1200);
+    } catch (error) {
+        importFeedback.textContent = 'Error al importar el archivo.';
+        importFeedback.className = 'text-sm text-red-600';
+    }
+}
+
+initCardDays();
+filterCards();
+</script>
+{% endblock %}

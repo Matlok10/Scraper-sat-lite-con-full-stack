@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Lightweight wrapper for dev.py with a convenience 'activate' command.
+set -e
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+activate() {
+  if [[ -f "$ROOT_DIR/venv/bin/activate" ]]; then
+    # shellcheck disable=SC1090
+    source "$ROOT_DIR/venv/bin/activate"
+    echo "(.venv) activated. Python: $(python -V 2>&1)"
+  else
+    echo "venv not found, creating with: python3 -m venv venv"
+    python3 -m venv "$ROOT_DIR/venv"
+    # shellcheck disable=SC1090
+    source "$ROOT_DIR/venv/bin/activate"
+    echo "(.venv) activated. Next: pip install -r backend/requirements.txt"
+  fi
+}
+
+if [[ "${1:-}" == "activate" ]]; then
+  # IMPORTANT: to persist activation in the current shell, run: source ./dev activate
+  if [[ "$0" == "$BASH_SOURCE" ]]; then
+    echo "⚠️  To persist activation, run: source ./dev activate"
+  fi
+  activate
+else
+  exec python3 "$ROOT_DIR/dev.py" "$@"
+fi

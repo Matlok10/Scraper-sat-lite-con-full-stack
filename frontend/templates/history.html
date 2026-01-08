@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Historial - Academia Scraper AI{% endblock %}
+
+{% block page_title %}Historial de Sesiones{% endblock %}
+
+{% block content %}
+<div class="p-12 text-center bg-white rounded-3xl border border-slate-100">
+    <h2 class="text-2xl font-bold text-slate-800 mb-2">Historial de Sesiones</h2>
+    <p class="text-slate-500 mb-6">Módulo en construcción...</p>
+    <div class="max-w-md mx-auto space-y-3">
+        {% for sesion in sesiones %}
+        <div class="p-4 bg-slate-50 rounded-xl flex items-center justify-between border border-slate-100">
+            <div>
+                <span class="text-sm font-bold text-slate-700">{{ sesion.inicio|date:"d/m/Y H:i" }}</span>
+                <p class="text-xs text-slate-500">{{ sesion.posts_encontrados }} posts encontrados</p>
+            </div>
+            <span class="px-3 py-1 rounded-md text-[10px] font-bold {% if sesion.estado == 'completado' %}bg-emerald-100 text-emerald-700{% else %}bg-orange-100 text-orange-700{% endif %}">
+                {{ sesion.get_estado_display }}
+            </span>
+        </div>
+        {% empty %}
+        <p class="text-slate-400 py-8">No hay sesiones registradas</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

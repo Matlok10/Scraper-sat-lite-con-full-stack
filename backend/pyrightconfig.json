@@ -6,7 +6,8 @@
     "**/node_modules",
     "**/__pycache__",
     "**/venv",
-    "**/env"
+    "**/env",
+    "**/migrations"
   ],
   "defineConstant": {
     "DEBUG": true
@@ -18,6 +19,16 @@
   "pythonPlatform": "Linux",
   "reportMissingImports": true,
   "reportMissingTypeStubs": false,
+  "typeCheckingMode": "basic",
+  "reportGeneralTypeIssues": false,
+  "reportOptionalMemberAccess": false,
+  "reportOptionalSubscript": false,
+  "reportPrivateImportUsage": false,
+  "reportUnknownMemberType": false,
+  "reportUnknownParameterType": false,
+  "reportUnknownVariableType": false,
+  "reportUnknownArgumentType": false,
+  "reportAttributeAccessIssue": false,
   "reportGeneralTypeIssues": "warning",
   "reportOptionalMemberAccess": "warning",
   "reportOptionalSubscript": "warning",

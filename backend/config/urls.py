@@ -25,7 +25,7 @@ from scraping.views import (
     GruposViewSet, TareaScrapeoViewSet, 
     SesionScrapingViewSet, PostScrapeadoViewSet
 )
-from users.views import UserViewSet
+from users.views import UserViewSet, UserLoginView, UserLogoutView
 from config.views import DashboardView, CatedrasView, RecommendationsView, ScrapingView, HistoryView
 
 # API Router configuration
@@ -49,6 +49,9 @@ def spa_view(_request):
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
+    # Auth API endpoints (token-based)
+    path('api/auth/login/', UserLoginView.as_view(), name='api-login'),
+    path('api/auth/logout/', UserLogoutView.as_view(), name='api-logout'),
 
     # Template routes
     path('', DashboardView.as_view(), name='dashboard'),

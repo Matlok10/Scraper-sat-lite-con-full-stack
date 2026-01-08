@@ -55,6 +55,17 @@ class ComisionSerializer(serializers.ModelSerializer):
             'ultima_actualizacion_scraping', 'fecha_creacion'
         ]
         read_only_fields = ['id_comision', 'fecha_creacion', 'ultima_actualizacion_scraping']
+        extra_kwargs = {
+            'horario': {'required': False, 'allow_null': True, 'allow_blank': True},
+            'cuatrimestre': {'required': False, 'allow_null': True, 'allow_blank': True},
+            'modalidad': {'required': False, 'allow_null': True, 'allow_blank': True},
+            'sede': {'required': False, 'allow_blank': True},
+            'numero_catedra': {'required': False, 'allow_null': True},
+            'ano': {'required': False, 'allow_null': True},
+            'docente': {'required': False, 'allow_null': True},
+        }
+        # Evitar que UniqueTogetherValidator exija campos opcionales en creación
+        validators = []
 
 
 # ============================================================================

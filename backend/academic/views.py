@@ -214,6 +214,15 @@ class ComisionViewSet(viewsets.ModelViewSet):
         
         return queryset
 
+    def create(self, request, *args, **kwargs):
+        """Crear comisión con validación explícita para ver errores claramente en tests."""
+        serializer = self.get_serializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
     @action(detail=False, methods=['post'], url_path='crear-manual', permission_classes=[AllowAny])
     def crear_manual(self, request):
         """Crea o actualiza una comisión a partir de datos simples (sin ID de docente)."""

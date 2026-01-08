@@ -15,6 +15,29 @@ class User(AbstractUser):
     - is_active, is_staff, is_superuser
     """
     
+    # Roles de usuario
+    ROL_CHOICES = [
+        ('estudiante', 'Estudiante'),
+        ('colaborador', 'Colaborador Scraping'),
+        ('moderador', 'Moderador'),
+        ('admin', 'Administrador'),
+    ]
+    
+    rol = models.CharField(
+        max_length=20,
+        choices=ROL_CHOICES,
+        default='estudiante',
+        verbose_name="Rol"
+    )
+    
+    # Gamificación
+    puntos = models.IntegerField(default=0, verbose_name="Puntos")
+    contribuciones_aprobadas = models.IntegerField(default=0)
+    
+    # Metadata del scraper
+    puede_scrapear = models.BooleanField(default=False)
+    sesiones_scraping_activas = models.IntegerField(default=0)
+    
     # Django ORM manager (explícito para type checking)
     objects: models.Manager['User']
     
@@ -24,4 +47,4 @@ class User(AbstractUser):
         ordering = ['-date_joined']
     
     def __str__(self) -> str:
-        return f"{self.username} ({self.email})"
+        return f"{self.username} ({self.email}) - {self.rol}"

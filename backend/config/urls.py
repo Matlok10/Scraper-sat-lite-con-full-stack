@@ -28,7 +28,7 @@ from scraping.views import (
     GruposViewSet, TareaScrapeoViewSet, 
     SesionScrapingViewSet, PostScrapeadoViewSet
 )
-from users.views import UserLoginView, UserLogoutView
+from users.views import UserLoginView, UserLogoutView, UserViewSet
 
 # API Router configuration
 router = DefaultRouter()
@@ -37,6 +37,7 @@ router.register(r'grupos', GruposViewSet, basename='grupo')
 router.register(r'tareas', TareaScrapeoViewSet, basename='tarea')
 router.register(r'sesiones', SesionScrapingViewSet, basename='sesion')
 router.register(r'posts', PostScrapeadoViewSet, basename='post')
+router.register(r'users', UserViewSet, basename='user')
 
 
 def spa_view(request):

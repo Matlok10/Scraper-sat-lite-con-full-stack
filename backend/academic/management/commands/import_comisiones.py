@@ -547,7 +547,7 @@ class Command(BaseCommand):
 
         grupos = {}
         for com in Comision.objects.all():
-            key = (com.codigo, com.docente_id, com.cuatrimestre or '', com.sede or '')
+            key = (com.codigo, com.docente, com.cuatrimestre or '', com.sede or '')
             grupos.setdefault(key, []).append(com)
 
         eliminadas = 0
